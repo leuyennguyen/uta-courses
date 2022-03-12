@@ -1,7 +1,7 @@
 # uta-courses
 
-###### cse-3320-os
-###### cse
+###### cse-3320-os: Operating System
+###### cse-4308-ai: Artificial Intelligence
 ###### cse
 ###### cse
 ###### cse
@@ -30,4 +30,10 @@ In this assignment you will build your own implementation of malloc and free. Th
 interacts with the operating system to perform heap management on behalf of a user process as demonstrated in class. 
 
 **Fat-32 Assignment**  
-This assignment will familiarize you with the FAT32 file system. You will become familiar with file allocation tables, endieness, as well as file access. You will implement a user space shell application that is capable of interpreting a FAT32 file system image. The utility must not corrupt the file system image and should be robust. No existing kernel code or any other FAT 32 utility code may be used in your program.
+This assignment will familiarize you with the FAT32 file system. You will become familiar with file allocation tables, endieness, as well as file access. You will implement a user space shell application that is capable of interpreting a FAT32 file system image. The utility must not corrupt the file system image and should be robust. No existing kernel code or any other FAT 32 utility code may be used in your program.  
+
+## cse-4308-ai  
+**Uninformed and Informed Cost Search**
+Implement a search algorithm that can find a route between any two cities.
+
+
