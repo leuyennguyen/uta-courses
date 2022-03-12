@@ -1,12 +1,16 @@
 # uta-courses
 
 ###### cse-3320-os: Operating System
+
 ###### cse-4308-ai: Artificial Intelligence
-###### cse
-###### cse
-###### cse
+
+###### cse-3302-programming-languages: Programming Languages
+
 ###### cse
 
+###### cse
+
+###### cse
 
 ## cse-3320-os
 
@@ -14,26 +18,37 @@
 In this assignment you will learn how to start existing Docker containers and create your own containers with your applications.
 
 **Shell Assignment**  
-In this assignment you will write your own shell program, Mav shell (msh), similar to bourne shell (bash), c-shell (csh), or korn shell 
-(ksh). It will accept commands, fork a child process and execute those commands. The shell, like csh or bash, will run and accept 
+In this assignment you will write your own shell program, Mav shell (msh), similar to bourne shell (bash), c-shell (csh), or korn shell
+(ksh). It will accept commands, fork a child process and execute those commands. The shell, like csh or bash, will run and accept
 commands until the user exits the shell.
 
 **Thread Assignment**  
 The purpose of this project is to practice threaded programming by solving various
 problems. The objectives of this project is to learn:
+
 1. Get familiar with threading.
 2. How to use mutexes, semaphores, and conditional variables in a threading library.
 3. How to design efficient solutions for mutual exclusion problems.
 
 **Heap Assignment**  
-In this assignment you will build your own implementation of malloc and free. That is, you will need to implement a library that 
-interacts with the operating system to perform heap management on behalf of a user process as demonstrated in class. 
+In this assignment you will build your own implementation of malloc and free. That is, you will need to implement a library that
+interacts with the operating system to perform heap management on behalf of a user process as demonstrated in class.
 
 **Fat-32 Assignment**  
-This assignment will familiarize you with the FAT32 file system. You will become familiar with file allocation tables, endieness, as well as file access. You will implement a user space shell application that is capable of interpreting a FAT32 file system image. The utility must not corrupt the file system image and should be robust. No existing kernel code or any other FAT 32 utility code may be used in your program.  
+This assignment will familiarize you with the FAT32 file system. You will become familiar with file allocation tables, endieness, as well as file access. You will implement a user space shell application that is capable of interpreting a FAT32 file system image. The utility must not corrupt the file system image and should be robust. No existing kernel code or any other FAT 32 utility code may be used in your program.
 
-## cse-4308-ai  
+## cse-4308-ai
+
 **Uninformed and Informed Cost Search**  
 Implement a search algorithm that can find a route between any two cities.
 
+## cse-3302-programming languages
 
+**Lab 1: Functional Programming using JavaScript**  
+Using functional programming implement these following question.
+
+**Lab 2: RPN Calculator using Python**  
+Use Python to create a simple calculator that accepts Reverse Polish Notation (RPN) and displays the final answer.
+
+**Lab 3: Nesting depth of curly braces using Python**  
+Write a program that will take an input file called input.txt which will contain a Java program and parse it and output an annotated version.
