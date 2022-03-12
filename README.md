@@ -33,7 +33,7 @@ interacts with the operating system to perform heap management on behalf of a us
 This assignment will familiarize you with the FAT32 file system. You will become familiar with file allocation tables, endieness, as well as file access. You will implement a user space shell application that is capable of interpreting a FAT32 file system image. The utility must not corrupt the file system image and should be robust. No existing kernel code or any other FAT 32 utility code may be used in your program.  
 
 ## cse-4308-ai  
-**Uninformed and Informed Cost Search**
+**Uninformed and Informed Cost Search**  
 Implement a search algorithm that can find a route between any two cities.
 
 
