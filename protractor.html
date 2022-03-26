@@ -1,0 +1,108 @@
+<script src="https://cdn.jsdelivr.net/npm/underscore@1.13.2/underscore-umd-min.js
+"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="js/ruler.js"></script>
+<script src="js/canvas-toBlob.js"></script>
+<script src="js/clipper.js"></script>
+<script src="js/file_saver.min.js"></script>
+<script src="js/paper-full.js"></script>
+<script src="js/paper-extra.js"></script>
+<script src="js/PaperDesignTool.js"></script>
+
+
+<script type="text/javascript">
+	OUTER_RADIUS = 200
+	MAJOR_TICK_LENGTH = 15
+	MINOR_TICK_LENGTH = 5
+	CENTER_HOLE_RADIUS = 5
+	LABEL_RADIUS = 40
+
+	/* Main function */
+	$(function(){
+		window.tool = new PaperDesignTool({canvas: $('canvas')})
+		$("button#download-svg").click(function(){window.tool.save_svg()})
+		draw_protractor()
+		paper.view.update()
+	})
+
+
+	function draw_protractor(){
+		console.log("\t", "Protractor Drawing Routine")
+		outer = new paper.Path.Circle({
+			name: "outer",
+			radius: OUTER_RADIUS,
+			strokeColor: "black",
+			strokeWidth: 3,
+			position: paper.view.center, 
+			fillColor: "white"
+		})
+		inner = new paper.Path.Circle({
+			name: "inner",
+			radius: CENTER_HOLE_RADIUS,
+			strokeColor: "black",
+			strokeWidth: 3,
+			position: paper.view.center
+		})
+		major_lines = _.range(0, 360, 45)
+		minor_lines = _.range(0, 360, 5)
+		
+		// COMMENT THESE LINES AS 
+		// YOU IMPLEMENT THE FUNCTIONS BELOW
+		draw_lines(outer, major_lines, MAJOR_TICK_LENGTH)
+		draw_lines(outer, minor_lines, MINOR_TICK_LENGTH)
+		draw_text(outer, major_lines, LABEL_RADIUS)
+	}
+
+	// Given an array of degree locations [0, 45, 90...], 
+	// Add a PointText label at the degree location
+	// at the specified distance from the center.
+	// Use a Courier New, bold, black, 25 pt font.
+
+	draw_text = function(outer, lines, distance){
+		// TODO
+		var origin = new paper.Point(outer.position.x, outer.position.y);
+		var degree = 270;
+		for (var i = 0 ; i < lines.length ; i++) {
+			var offset = OUTER_RADIUS*(parseInt(lines[i]))*Math.PI/180;
+			var start = outer.getPointAt(offset);
+			var vector = new paper.Path(start, origin);
+			var end = vector.getPointAt(distance);
+			if (degree >= 360) {
+				degree = 0;
+			}
+			var text = new paper.PointText(new paper.Point(end.x, end.y+5));
+			text.justification = "center";
+			text.content = degree;
+			text.fontFamily = "Courier New";
+			text.fontWeight = "bold";
+			text.color = "black";
+			text.fontSize = "25px";
+			degree += 45;
+		}
+	}
+
+	// Given an array of degree locations [0, 45, 90...], 
+	// draw a line of specified length from the edge of
+	// the outer circle towards the center.
+	draw_lines = function(outer, lines, length){
+		// TODO
+		var line = new paper.Path();
+		var origin = new paper.Point(outer.position.x, outer.position.y);
+
+		for (var i = 0 ; i < lines.length ; i++) {
+			var offset = parseInt(lines[i])*(Math.PI/180)*OUTER_RADIUS;
+			var start = outer.getPointAt(offset);
+			var vector = new paper.Path(start, origin);
+
+			var end = vector.getPointAt(length);
+			line = new paper.Path({
+				segments: [start, end],
+				strokeColor: "black"
+			})
+		}
+	}
+</script>
+
+<link href="css/application.css" rel="stylesheet"/>
+<canvas resize> Hello </canvas>
+<button id="download-svg"> SVG </button>

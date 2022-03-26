@@ -1,0 +1,342 @@
+<script src="https://cdn.jsdelivr.net/npm/underscore@1.13.2/underscore-umd-min.js
+"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="js/ruler.js"></script>
+<script src="js/canvas-toBlob.js"></script>
+<script src="js/clipper.js"></script>
+<script src="js/file_saver.min.js"></script>
+<script src="js/paper-full.js"></script>
+<script src="js/paper-extra.js"></script>
+<script src="js/PaperDesignTool.js"></script>
+
+<script type="text/javascript">
+	DEFAULT_COLORING_PAGE = '/assets/mandala.svg';
+	// DEFAULT_COLORING_PAGE = "/assets/cow.svg";
+	// DEFAULT_COLORING_PAGE = "/assets/spirograph.svg";
+
+	/* Main function */
+	$(function () {
+		window.tool = new PaperDesignTool({ canvas: $('canvas') });
+		$('button#download-svg').click(function () {
+			window.tool.save_svg();
+		});
+
+		var bottom, side;
+
+		addColoringPage(DEFAULT_COLORING_PAGE);
+		palette = addColorPalette();
+		// Examples: Comment out to activate other interactions
+		//rainbowInteraction(palette);
+		paintBucketInteraction(palette);
+		interactionA(palette);
+		//interactionB(palette);
+		makeButton(obj);
+		paper.view.update(palette);
+	});
+	interactionA = function (palette) {
+		console.log('Interaction A Activated!');
+		// TODO
+		hitOptions = {
+			stroke: false,
+			fill: true,
+			tolerance: 1,
+			minDistance: 10,
+		};
+		gradient = ['white', 'white', 'white'];
+
+		paper.tool = new paper.Tool({
+			name: 'pressure',
+			hitResults: null, // A copy of selected areas
+			lastColor: null, // A copy of lastColor used/selected
+			onMouseDown: function (event) {
+				scope = this;
+				hitResults = paper.project.hitTestAll(event.point, hitOptions);
+				_.each(hitResults, function (h) {
+					if (h.item.fillColor.brightness === 0) {
+						return;
+					}
+					if (h.item.ui) {
+						return;
+					}
+					h.item.fillColor = palette.lastColor;
+					lastColor = this.palette.lastColor.toCSS(true);
+					if (gradient.length > 2) {
+						gradient = gradient.splice(1);
+					}
+					if (!gradient.includes(lastColor)) {
+						gradient.push(this.palette.lastColor.toCSS(false));
+					}
+					console.log('Gradient = ', gradient);
+				});
+			},
+			onKeyDown: function (event) {
+				var colorCode = lastColor; // Get a copy of lastColor used
+				colorCode = colorCode.slice(1); // lastCode is hexCode, so this is to remove '#' symbol
+				var colorValue = parseInt(colorCode, 16); // Change base of hexCode
+				var r, g, b;
+				var delta = 5;
+				_.each(hitResults, function (h) {
+					// Left arrow to lighten the color
+					if (event.key == 'left') {
+						r = (colorValue >> 16) + delta;
+						if (r > 255) r = 255;
+						else if (r < 0) r = 0;
+						b = ((colorValue >> 8) & 0x00ff) + delta;
+						if (b > 255) b = 255;
+						else if (b < 0) b = 0;
+						g = (colorValue & 0x0000ff) + delta;
+						if (g > 255) g = 255;
+						else if (g < 0) g = 0;
+					}
+					// Right arrow to darken the color
+					if (event.key == 'right') {
+						r = (colorValue >> 16) - delta;
+						if (r > 255) r = 255;
+						else if (r < 0) r = 0;
+						b = ((colorValue >> 8) & 0x00ff) - delta;
+						if (b > 255) b = 255;
+						else if (b < 0) b = 0;
+						g = (colorValue & 0x0000ff) - delta;
+						if (g > 255) g = 255;
+						else if (g < 0) g = 0;
+					}
+
+					finalColor = '#' + (g | (b << 8) | (r << 16)).toString(16);
+					lastColor = finalColor; // lastColor used becomes the most current color
+					h.item.fillColor = finalColor;
+
+					if (event.modifiers.space) {
+						var start = new paper.Color(gradient[0]);
+						var middle = new paper.Color(gradient[1]);
+						var end = new paper.Color(gradient[2]);
+						console.log('hello');
+						_.each(hitResults, function (h) {
+							var gradient = new paper.Gradient([
+								start,
+								middle,
+								end,
+							]);
+							h.item.fillColor = new paper.Color(
+								gradient,
+								h.item.bounds.topLeft,
+								h.item.bounds.bottomCenter
+							);
+						});
+					}
+				});
+			},
+		});
+	}
+	interactionB = function (palette) {
+		console.log('Interaction B Activated!');
+		// TODO
+		hitOptions = {
+			stroke: false,
+			fill: true,
+			tolerance: 1,
+			minDistance: 10,
+		};
+
+		paper.tool = new paper.Tool({
+			name: 'pressure',
+			lastColor: null,
+			onMouseDrag: function (event) {
+				scope = this;
+				hitResults = paper.project.hitTestAll(event.point, hitOptions);
+				_.each(hitResults, function (h) {
+					console.log(event.point.x + ', ' + event.point.y);
+					lastColor = this.palette.lastColor.toCSS(true);
+					if (event.point.y < bottom.y - 15) {
+						if (event.modifiers.space) {
+							var path = new paper.Path.Circle({
+								center: event.point,
+								radius: 5,
+								strokeColor: lastColor,
+								fillColor: 'white',
+							});
+						}
+						if (event.modifiers.command) {
+							var path = new paper.Path.Star({
+								center: event.point,
+								points: 5,
+								radius1: 5,
+								radius2: 10,
+								strokeColor: lastColor,
+								fillColor: 'white',
+							});
+						}
+						if (event.modifiers.shift) {
+							var path = new paper.Path.RegularPolygon({
+								center: event.point,
+								radius: 5,
+								sides: 3,
+								strokeColor: lastColor,
+								fillColor: 'white',
+							});
+						}
+					}
+				});
+			},
+		});
+	};
+
+	/*
+	    Traditional PaintBucket
+	  */
+	paintBucketInteraction = function (palette) {
+		console.log('PaintBucket Interaction Activated!');
+		hitOptions = {
+			stroke: false,
+			fill: true,
+			tolerance: 1,
+			minDistance: 10,
+		};
+		paper.tool = new paper.Tool({
+			name: 'paintBucket',
+			onMouseDown: function (event) {
+				scope = this;
+				hitResults = paper.project.hitTestAll(event.point, hitOptions);
+				_.each(hitResults, function (h) {
+					if (h.item.fillColor.brightness === 0) {
+						return;
+					}
+					if (h.item.ui) {
+						return;
+					}
+					h.item.fillColor = palette.lastColor;
+				});
+			},
+		}); // END TOOL
+	};
+
+	/*
+	    Turns everything into a rainbow fill.
+	  */
+	rainbowInteraction = function (palette) {
+		console.log('Rainbow Interaction Activated!');
+		hitOptions = {
+			stroke: false,
+			fill: true,
+			tolerance: 1,
+			minDistance: 10,
+		};
+		paper.tool = new paper.Tool({
+			name: 'rainbowBucket',
+			onMouseDrag: function (event) {
+				scope = this;
+				hitResults = paper.project.hitTestAll(event.point, hitOptions);
+				_.each(hitResults, function (h) {
+					if (h.item.fillColor.brightness === 0) {
+						return;
+					}
+					if (h.item.ui) {
+						return;
+					}
+					h.item.fillColor = {
+						gradient: {
+							stops: ['yellow', 'red', 'blue'],
+						},
+						origin: h.item.bounds.topLeft,
+						destination: h.item.bounds.bottomRight,
+					};
+				});
+			},
+		}); // END TOOL
+	};
+
+	addColoringPage = function (url) {
+		console.log('\t> Coloring Page Loading:', url);
+		paper.project.importSVG(url, {
+			expandShapes: false,
+			insert: true,
+			onError: function (item) {
+				console.error('Could not load', ops.url);
+			},
+			onLoad: function (item) {
+				// item.position = paper.view.center;
+				box = paper.view.bounds.expand(-100);
+				box.height = box.height - 100;
+				item.fitBounds(box);
+				item.position = box.center;
+			},
+		});
+	};
+
+	addColorPalette = function () {
+		makeUI = function () {
+			var bg, c, g, hues, num_of_swatches;
+			num_of_swatches = 8;
+			c = new paper.Color('red');
+			hues = _.range(0, 360, 360 / num_of_swatches);
+			g = new paper.Group({
+				name: 'palette',
+				colorable: false,
+			});
+			_.each(hues, function (h, i) {
+				var color, stroke_color, swatch;
+				color = c.clone();
+				color.hue = h;
+				color.saturation = 0.8;
+				stroke_color = color.clone();
+				stroke_color.brightness = stroke_color.brightness - 0.3;
+				return (swatch = new paper.Path.Circle({
+					name: 'swatch',
+					parent: g,
+					radius: 20,
+					fillColor: color,
+					position: paper.view.center
+						.clone()
+						.add(new paper.Point(43 * i, 0)),
+					strokeColor: stroke_color,
+					strokeWidth: 4,
+					strokeScaling: true,
+					ui: true,
+				}));
+			});
+			bg = new paper.Path.Rectangle({
+				parent: g,
+				rectangle: g.bounds.expand(15),
+				fillColor: new paper.Color(0.9),
+				radius: 10,
+				shadowBlur: 5,
+				shadowOffset: new paper.Point(1, 1),
+				shadowColor: new paper.Color(0, 0, 0, 0.5),
+				ui: true,
+			});
+			bg.sendToBack();
+			g.set({
+				position: paper.view.bounds.bottomCenter.add(
+					new paper.Point(0, -1 * g.bounds.height - 20)
+				),
+			});
+			bottom = g.bounds;
+			return g.scale(1.5);
+		};
+
+		bindInteraction = function () {
+			var palette, swatches;
+			palette = paper.project.getItem({
+				name: 'palette',
+			});
+			palette.lastColor = null;
+			swatches = palette.getItems({
+				name: 'swatch',
+			});
+			_.each(swatches, function (s) {
+				s.onMouseDown = function (e) {
+					console.log('Palette:', this.fillColor.toCSS(true));
+					palette.lastColor = this.fillColor;
+				};
+			});
+			return palette;
+		};
+
+		makeUI();
+		palette = bindInteraction();
+		return palette;
+	};
+</script>
+
+<link href="css/application.css" rel="stylesheet" />
+<canvas resize> Hello </canvas>
+<button id="download-svg">SVG</button>
