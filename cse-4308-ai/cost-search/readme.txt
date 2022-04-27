@@ -1,7 +1,7 @@
 Name: Le Uyen Nguyen
 Student ID: 100 171 8086
 Programming language used: C
-Omega compatible: Yes, I did run test on Omega
+Omega compatible: Yes
 How the code is structured:
  - find_route.c contains all source code.
  - Code includes 13 functions (including main and one test function).
